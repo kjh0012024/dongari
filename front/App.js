@@ -10,14 +10,16 @@ import LoginScreen from './src/screens/Auth/LoginScreen';
 import RegisterScreen from './src/screens/Auth/RegisterScreen';
 import FeedScreen from './src/screens/Feed/FeedScreen';
 import SearchScreen from './src/screens/Search/SearchScreen';
-import SchoolFilterScreen from './src/screens/Search/SchoolFilterScreen';
-import CategoryFilterScreen from './src/screens/Search/CategoryFilterScreen';
-import ClubDetailScreen from './src/screens/Club/ClubDetailScreen';
+import SchoolListScreen from './src/screens/Search/SchoolListScreen';
+import SchoolClubScreen from './src/screens/Search/SchoolClubScreen';
+import CategoryListScreen from './src/screens/Search/CategoryListScreen';
+import CategoryClubScreen from './src/screens/Search/CategoryClubScreen';
 import CalenderScreen from './src/screens/Calender/CalenderScreen';
 
 const AuthStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const SearchStack = createStackNavigator();
+
 
 // 1. 찾기 탭 내부 스택 (찾기 메인 -> 필터 -> 상세)
 function SearchStackScreen() {
