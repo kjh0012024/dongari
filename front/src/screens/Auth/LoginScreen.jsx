@@ -35,7 +35,7 @@ export default function LoginScreen({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>UnivClub</Text>
+      <Text style={styles.title}>Dongari</Text>
       
       <TextInput 
         style={styles.input} 
