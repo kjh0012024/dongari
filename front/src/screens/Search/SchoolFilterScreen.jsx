@@ -1,19 +1,36 @@
-// src/screens/Search/SchoolFilterScreen.jsx
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, TextInput } from 'react-native';
 import { mockApi } from '../../api';
 
 export default function SchoolFilterScreen({ navigation }) {
   const [clubs, setClubs] = useState([]);
+  const [filteredClubs, setFilteredClubs] = useState([]);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
-    mockApi.getClubs('school').then(setClubs);
+    mockApi.getClubs('학교별').then(data => {
+      setClubs(data);
+      setFilteredClubs(data);
+    });
   }, []);
+
+  useEffect(() => {
+    const filtered = clubs.filter(club =>
+      club.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setFilteredClubs(filtered);
+  }, [searchText, clubs]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="학교별 동아리 검색..."
+        value={searchText}
+        onChangeText={setSearchText}
+      />
       <FlatList
-        data={clubs}
+        data={filteredClubs}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity 
@@ -30,8 +47,9 @@ export default function SchoolFilterScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#fff' },
-  item: { padding: 20, borderBottomWidth: 1, borderColor: '#eee' },
+  safeArea: { flex: 1, backgroundColor: '#fff', padding: 20 },
+  searchInput: { height: 50, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, paddingHorizontal: 15, marginBottom: 10 },
+  item: { padding: 15, borderBottomWidth: 1, borderColor: '#eee' },
   name: { fontSize: 16, fontWeight: 'bold' },
   info: { color: 'gray', marginTop: 5 }
 });

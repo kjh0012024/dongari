@@ -1,9 +1,7 @@
-// src/screens/Club/ClubDetailScreen.jsx
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function ClubDetailScreen({ route }) {
-  // 이전 화면(목록)에서 넘겨준 club 정보를 받음
   const { club } = route.params || {};
 
   return (
