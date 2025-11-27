@@ -1,4 +1,3 @@
-// src/screens/Search/CategoryFilterScreen.jsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { mockApi } from '../../api';
@@ -7,7 +6,7 @@ export default function CategoryFilterScreen({ navigation }) {
   const [clubs, setClubs] = useState([]);
 
   useEffect(() => {
-    mockApi.getClubs('category').then(setClubs);
+    mockApi.getClubs('카테고리별').then(setClubs);
   }, []);
 
   return (
