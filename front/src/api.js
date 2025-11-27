@@ -1,12 +1,10 @@
 // src/api.js
 
 export const mockApi = {
-  // 1. 로그인 API (아이디/비번 검사 기능 포함)
+  // 1. 로그인 API
   login: async (email, password) => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        // [검사 과정] 실제 서버처럼 아이디와 비번을 확인합니다.
-        // 아이디: test, 비번: 1234 일 때만 성공
         if (email === 'test' && password === '1234') {
           console.log(`[API] 로그인 성공: ${email}`);
           resolve({ success: true, token: 'fake-jwt-token-123' });
@@ -14,11 +12,27 @@ export const mockApi = {
           console.log(`[API] 로그인 실패: ${email}`);
           resolve({ success: false });
         }
-      }, 1000); // 1초 동안 로딩하는 척 (지연 시간)
+      }, 1000);
     });
   },
 
-  // 2. 내 피드 API (가짜 게시물 데이터)
+  // 2. [추가됨] 회원가입 API
+  register: async (email, password) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // [가짜 중복 검사] 'test'라는 이메일은 이미 있다고 가정
+        if (email === 'test') {
+          console.log(`[API] 회원가입 실패(중복): ${email}`);
+          resolve({ success: false, message: '이미 가입된 이메일입니다.' });
+        } else {
+          console.log(`[API] 회원가입 성공: ${email}`);
+          resolve({ success: true });
+        }
+      }, 1000);
+    });
+  },
+
+  // 3. 내 피드 API
   getFeed: async () => {
     return new Promise((resolve) => {
       setTimeout(() => resolve([
@@ -29,7 +43,7 @@ export const mockApi = {
     });
   },
 
-  // 3. 동아리 목록 API (학교별/카테고리별 필터링 흉내)
+  // 4. 동아리 목록 API
   getClubs: async (type) => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -40,7 +54,6 @@ export const mockApi = {
             { id: '105', name: '사진 동아리', school: 'A대학교', category: '예술' },
           ]);
         } else {
-          // 카테고리별
           resolve([
             { id: '103', name: '축구 동아리', school: 'A대학교', category: '운동' },
             { id: '104', name: '농구 동아리', school: 'C대학교', category: '운동' },
@@ -51,7 +64,7 @@ export const mockApi = {
     });
   },
 
-  // 4. 캘린더 일정 API
+  // 5. 캘린더 일정 API
   getCalendar: async () => {
     return new Promise((resolve) => {
       setTimeout(() => resolve([
