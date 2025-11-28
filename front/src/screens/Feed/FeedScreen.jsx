@@ -52,6 +52,8 @@ export default function FeedScreen() {
   );
 }
 
+
+
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#fff' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },

@@ -16,6 +16,7 @@ import CategoryClubScreen from './src/screens/Search/CategoryClubScreen';
 import CalenderScreen from './src/screens/Calender/CalenderScreen';
 import SearchStackNavigator from './src/navigation/SearchStackNavigator';
 import ClubDetailScreen from './src/screens/Club/ClubDetailScreen';
+import ClubApplyScreen from './src/screens/Club/ClubApplyScreen';
 
 
 
@@ -64,7 +65,19 @@ function MainStackScreen() {
       <MainStack.Screen name="MainTabs" component={MainTabs} options={{ headerShown: false }} />
       
       {/* 상세 화면을 여기에 둠으로써 어디서든 접근 가능하게 함 */}
-      <MainStack.Screen name="ClubDetail" component={ClubDetailScreen} options={{ title: '동아리 상세' }} />
+    <MainStack.Screen
+      name="ClubDetail"
+      component={ClubDetailScreen}
+      options={{ title: '동아리 상세' }}
+    />
+
+    <MainStack.Screen
+      name="ClubApply"
+      component={ClubApplyScreen}
+      options={{ title: '동아리 신청' }}
+    />
+
+
     </MainStack.Navigator>
   );
 }
