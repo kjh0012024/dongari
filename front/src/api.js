@@ -1,19 +1,39 @@
 // src/api.js
 
+const BASE_URL = "http://localhost:4000";
+
 export const mockApi = {
-  // 1. 로그인 API
-  login: async (email, password) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        if (email === 'test' && password === '1234') {
-          console.log(`[API] 로그인 성공: ${email}`);
-          resolve({ success: true, token: 'fake-jwt-token-123' });
-        } else {
-          console.log(`[API] 로그인 실패: ${email}`);
-          resolve({ success: false });
-        }
-      }, 1000);
-    });
+  login: async (user_id, password) => {
+    try {
+      const response = await fetch(`${BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.log("[API] 로그인 실패:", data);
+        return { success: false, error: data.message };
+      }
+
+      console.log("[API] 로그인 성공:", data);
+      return {
+        success: true,
+        token: data.accessToken,
+        user: data.user,
+      };
+
+    } catch (error) {
+      console.error("[API] 로그인 요청 오류:", error);
+      return { success: false, error: "네트워크 오류" };
+    }
   },
 
   // 2. [추가됨] 회원가입 API
@@ -36,7 +56,7 @@ export const mockApi = {
   getFeed: async () => {
     return new Promise((resolve) => {
       setTimeout(() => resolve([
-        { id: '1', club: 'GET IT', content: '이번 주 정기 세션은 React Native 기초입니다. 모두 노트북 지참해주세요!', date: '2025-11-27' },
+        { id: '1', club: '멋쟁이 사자처럼', content: '이번 주 정기 세션은 React Native 기초입니다. 모두 노트북 지참해주세요!', date: '2025-11-27' },
         { id: '2', club: '통기타 동아리', content: '가을 정기 공연이 다음주로 다가왔습니다. 많은 관심 부탁드려요 🎸', date: '2025-11-26' },
         { id: '3', club: 'FC 슛돌이', content: '이번 주말 친선 경기 라인업 공지합니다.', date: '2025-11-25' },
       ]), 1000);
@@ -68,7 +88,7 @@ export const mockApi = {
   getCalendar: async () => {
     return new Promise((resolve) => {
       setTimeout(() => resolve([
-        { id: 'c1', title: '코딩 해커톤', date: '2025-12-01', club: 'GET IT' },
+        { id: 'c1', title: '코딩 해커톤', date: '2025-12-01', club: '멋쟁이 사자처럼' },
         { id: 'c2', title: '댄스부 회식', date: '2025-12-05', club: '댄스 동아리' },
         { id: 'c3', title: '기말고사 간식행사', date: '2025-12-10', club: '총학생회' },
       ]), 1000);
