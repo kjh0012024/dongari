@@ -99,7 +99,10 @@ export default function ClubDetailScreen({ route, navigation }) {
       )}
 
       {/* 활동 사진 그리드 */}
-      <Text style={styles.sectionTitle}>활동 사진</Text>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>활동 사진</Text>
+      </View>
+      
 
       <FlatList
         data={images}
