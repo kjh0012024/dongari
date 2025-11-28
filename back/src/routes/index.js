@@ -1,35 +1,11 @@
-import express from "express";
-import { getConnection } from "../db.js";
+// back/src/routes/index.js
+import { Router } from "express";
 
-const router = express.Router();
+const router = Router();
 
-// 헬스 체크: 서버 살아있는지 확인
-router.get("/health", (req, res) => {
-  res.json({ status: "ok", message: "Server is running" });
-});
-
-// DB 연결 테스트
-router.get("/test-db", async (req, res) => {
-  let conn;
-  try {
-    conn = await getConnection();
-    const result = await conn.execute("SELECT 'OK' AS status FROM DUAL");
-    res.json({
-      db: "connected",
-      result: result.rows,
-    });
-  } catch (err) {
-    console.error("[DB] test error", err);
-    res.status(500).json({ db: "error", message: err.message });
-  } finally {
-    if (conn) {
-      try {
-        await conn.close();
-      } catch (e) {
-        console.error("[DB] close error", e);
-      }
-    }
-  }
+// 헬스 체크용
+router.get("/", (req, res) => {
+  res.send("Dongari backend is running 👋");
 });
 
 export default router;
