@@ -5,30 +5,23 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
+// 기존 스크린
 import LoginScreen from './src/screens/Auth/LoginScreen';
 import RegisterScreen from './src/screens/Auth/RegisterScreen';
 import FeedScreen from './src/screens/Feed/FeedScreen';
-import SearchScreen from './src/screens/Search/SearchScreen';
-import SchoolFilterScreen from './src/screens/Search/SchoolFilterScreen';
-import CategoryFilterScreen from './src/screens/Search/CategoryFilterScreen';
-import ClubDetailScreen from './src/screens/Club/ClubDetailScreen';
 import CalenderScreen from './src/screens/Calender/CalenderScreen';
+import SearchStackNavigator from './src/navigation/SearchStackNavigator'; // SearchStack 분리된 파일 사용
+import ClubDetailScreen from './src/screens/Club/ClubDetailScreen';
+import ClubApplyScreen from './src/screens/Club/ClubApplyScreen';
+
+// ★ [추가됨] 새로 만든 관리 및 설정 화면 import
+import ClubManagementScreen from './src/screens/Management/ClubManagementScreen';
+import SettingsScreen from './src/screens/Settings/SettingsScreen';
+import ProfileEditScreen from './src/screens/Settings/ProfileEditScreen';
 
 const AuthStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
-const SearchStack = createStackNavigator();
-const MainStack = createStackNavigator(); // ★ 새로 추가된 스택
-
-// 1. 찾기 탭 내부 스택 (이제 여기엔 상세화면이 없습니다)
-function SearchStackScreen() {
-  return (
-    <SearchStack.Navigator>
-      <SearchStack.Screen name="SearchMain" component={SearchScreen} options={{ headerShown: false }} />
-      <SearchStack.Screen name="SchoolFilter" component={SchoolFilterScreen} options={{ title: '학교별 찾기' }} />
-      <SearchStack.Screen name="CategoryFilter" component={CategoryFilterScreen} options={{ title: '카테고리별 찾기' }} />
-    </SearchStack.Navigator>
-  );
-}
+const MainStack = createStackNavigator();
 
 // 2. 메인 탭 (하단 탭바)
 function MainTabs() {
@@ -37,31 +30,64 @@ function MainTabs() {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: 'tomato',
+        tabBarInactiveTintColor: 'gray', // 비활성 아이콘 색상 추가
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-          if (route.name === 'Feed') iconName = focused ? 'home' : 'home-outline';
-          else if (route.name === 'Search') iconName = focused ? 'search' : 'search-outline';
-          else if (route.name === 'Calender') iconName = focused ? 'calendar' : 'calendar-outline';
+          
+          if (route.name === 'Feed') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Search') {
+            iconName = focused ? 'search' : 'search-outline';
+          } else if (route.name === 'Calender') {
+            iconName = focused ? 'calendar' : 'calendar-outline';
+          } 
+          // ★ [추가됨] 관리 탭 아이콘
+          else if (route.name === 'Management') {
+            iconName = focused ? 'clipboard' : 'clipboard-outline';
+          } 
+          // ★ [추가됨] 설정 탭 아이콘
+          else if (route.name === 'Settings') {
+            iconName = focused ? 'settings' : 'settings-outline';
+          }
+
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
     >
       <Tab.Screen name="Feed" component={FeedScreen} options={{ tabBarLabel: '내 피드' }} />
-      <Tab.Screen name="Search" component={SearchStackScreen} options={{ tabBarLabel: '찾기' }} />
+      <Tab.Screen name="Search" component={SearchStackNavigator} options={{ tabBarLabel: '찾기' }} />
       <Tab.Screen name="Calender" component={CalenderScreen} options={{ tabBarLabel: '캘린더' }} />
+      
+      {/* ★ [추가됨] 탭 2개 추가 */}
+      <Tab.Screen name="Management" component={ClubManagementScreen} options={{ tabBarLabel: '동아리 관리' }} />
+      <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: '설정' }} />
     </Tab.Navigator>
   );
 }
 
-// 3. ★ 메인 스택 (탭 화면 + 상세 화면을 묶어주는 가장 큰 틀)
+// 3. 메인 스택 (탭 화면 + 상세 화면을 묶어주는 가장 큰 틀)
 function MainStackScreen() {
   return (
     <MainStack.Navigator>
-      {/* 탭 화면을 기본으로 보여줌 */}
       <MainStack.Screen name="MainTabs" component={MainTabs} options={{ headerShown: false }} />
-      
-      {/* 상세 화면을 여기에 둠으로써 어디서든 접근 가능하게 함 */}
-      <MainStack.Screen name="ClubDetail" component={ClubDetailScreen} options={{ title: '동아리 상세' }} />
+      <MainStack.Screen 
+        name="ClubDetail" 
+        component={ClubDetailScreen} 
+        options={{ title: '동아리 상세' }} 
+      />
+      <MainStack.Screen 
+        name="ClubApply" 
+        component={ClubApplyScreen} 
+        options={{ title: '동아리 신청' }} 
+      />
+
+      {/* ★ [추가됨] 내 정보 수정 화면 등록 */}
+      <MainStack.Screen 
+        name="ProfileEdit" 
+        component={ProfileEditScreen} 
+        options={{ title: '내 정보 수정' }} 
+      />
+
     </MainStack.Navigator>
   );
 }
@@ -72,7 +98,7 @@ export default function App() {
   return (
     <NavigationContainer>
       {isLoggedIn ? (
-        <MainStackScreen /> // ★ MainTabs 대신 MainStackScreen을 렌더링
+        <MainStackScreen />
       ) : (
         <AuthStack.Navigator screenOptions={{ headerShown: false }}>
           <AuthStack.Screen name="Login" component={LoginScreen} initialParams={{ setIsLoggedIn }} />

@@ -93,5 +93,22 @@ export const mockApi = {
         { id: 'c3', title: '기말고사 간식행사', date: '2025-12-10', club: '총학생회' },
       ]), 1000);
     });
+  },
+  getUserInfo: async () => {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve({
+        email: 'test',       // 현재 아이디
+        school: '서울대학교', // 현재 학교
+      }), 500);
+    });
+  },
+  // [추가] 회원 정보 수정 요청
+  updateUser: async (email, password, school) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log(`[API] 정보 수정됨: ${email}, ${school}, 비번변경:${password ? 'O' : 'X'}`);
+        resolve({ success: true });
+      }, 1000);
+    });
   }
 };

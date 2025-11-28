@@ -2,17 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, TextInput } from 'react-native';
 import { mockApi } from '../../api';
 
-export default function SchoolFilterScreen({ navigation }) {
+export default function SchoolClubScreen({ route, navigation }) {
+  const { school } = route.params;
   const [clubs, setClubs] = useState([]);
   const [filteredClubs, setFilteredClubs] = useState([]);
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     mockApi.getClubs('학교별').then(data => {
-      setClubs(data);
-      setFilteredClubs(data);
+      const schoolClubs = data.filter(c => c.school === school);
+      setClubs(schoolClubs);
+      setFilteredClubs(schoolClubs);
     });
-  }, []);
+  }, [school]);
 
   useEffect(() => {
     const filtered = clubs.filter(club =>
@@ -25,7 +27,7 @@ export default function SchoolFilterScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       <TextInput
         style={styles.searchInput}
-        placeholder="학교별 동아리 검색..."
+        placeholder={`${school} 동아리 검색...`}
         value={searchText}
         onChangeText={setSearchText}
       />
