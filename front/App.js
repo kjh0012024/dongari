@@ -17,6 +17,7 @@ import ClubApplyScreen from './src/screens/Club/ClubApplyScreen';
 // ★ [추가됨] 새로 만든 관리 및 설정 화면 import
 import ClubManagementScreen from './src/screens/Management/ClubManagementScreen';
 import SettingsScreen from './src/screens/Settings/SettingsScreen';
+import ProfileEditScreen from './src/screens/Settings/ProfileEditScreen';
 
 const AuthStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -68,10 +69,7 @@ function MainTabs() {
 function MainStackScreen() {
   return (
     <MainStack.Navigator>
-      {/* 탭 화면을 기본으로 보여줌 */}
       <MainStack.Screen name="MainTabs" component={MainTabs} options={{ headerShown: false }} />
-      
-      {/* 상세 화면들 (전체 화면으로 뜸) */}
       <MainStack.Screen 
         name="ClubDetail" 
         component={ClubDetailScreen} 
@@ -82,6 +80,14 @@ function MainStackScreen() {
         component={ClubApplyScreen} 
         options={{ title: '동아리 신청' }} 
       />
+
+      {/* ★ [추가됨] 내 정보 수정 화면 등록 */}
+      <MainStack.Screen 
+        name="ProfileEdit" 
+        component={ProfileEditScreen} 
+        options={{ title: '내 정보 수정' }} 
+      />
+
     </MainStack.Navigator>
   );
 }

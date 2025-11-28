@@ -3,17 +3,15 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function SettingsScreen({ navigation, route }) {
-  // 로그아웃 처리 함수 (App.js에서 setIsLoggedIn 함수를 전달받아야 함)
+export default function SettingsScreen({ navigation }) { // navigation prop 받기
+  
   const handleLogout = async () => {
     Alert.alert("로그아웃", "정말 로그아웃 하시겠습니까?", [
       { text: "취소", style: "cancel" },
       { 
         text: "확인", 
         onPress: async () => {
-          await AsyncStorage.removeItem('userToken'); // 토큰 삭제
-          // 실제 앱에서는 상태 관리(Context 등)를 통해 로그인 화면으로 보냅니다.
-          // 여기서는 임시로 재시작 알림을 띄웁니다.
+          await AsyncStorage.removeItem('userToken');
           Alert.alert("알림", "앱을 재시작하면 로그인 화면으로 이동합니다.");
         }
       }
@@ -25,8 +23,12 @@ export default function SettingsScreen({ navigation, route }) {
       <View style={styles.container}>
         <Text style={styles.title}>설정</Text>
         
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuText}>내 정보 수정</Text>
+        {/* 내 정보 수정 버튼: 누르면 이동 */}
+        <TouchableOpacity 
+          style={styles.menuItem}
+          onPress={() => navigation.navigate('ProfileEdit')} 
+        >
+          <Text style={styles.menuText}>내 정보 수정 (아이디/비밀번호/학교)</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.menuItem}>
