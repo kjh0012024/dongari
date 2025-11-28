@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  FlatList,
-  Modal,
-  TextInput,
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Modal, TextInput,
   ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
@@ -99,10 +91,7 @@ export default function ClubDetailScreen({ route, navigation }) {
       )}
 
       {/* 활동 사진 그리드 */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>활동 사진</Text>
-      </View>
-      
+      <Text style={styles.sectionTitle}>활동 사진</Text>
 
       <FlatList
         data={images}
