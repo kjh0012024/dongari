@@ -3,7 +3,7 @@
 const BASE_URL = "http://localhost:4000";
 
 export const mockApi = {
-  login: async (user_id, password) => {
+  login: async (email, password) => {
     try {
       const response = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
@@ -11,7 +11,7 @@ export const mockApi = {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id,
+          email,
           password,
         }),
       });
@@ -36,20 +36,54 @@ export const mockApi = {
     }
   },
 
-  // 2. [추가됨] 회원가입 API
-  register: async (email, password) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-       // [가짜 중복 검사] 'test'라는 이메일은 이미 있다고 가정
-        if (email === 'test') {
-          console.log(`[API] 회원가입 실패(중복): ${email}`);
-          resolve({ success: false, message: '이미 가입된 이메일입니다.' });
-        } else {
-          console.log(`[API] 회원가입 성공: ${email}`);
-          resolve({ success: true });
-        }
-      }, 1000);
-    });
+  // 2. [수정됨] 회원가입 API
+  register: async (email, password, school) => {
+    try {
+      const response = await fetch(`${BASE_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          school,   // 🔹 여기에 학교 이름도 같이 보냄
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.log("[API] 회원가입 실패:", data);
+        return { success: false, message: data.message };
+      }
+
+      console.log("[API] 회원가입 성공:", data);
+      return { success: true };
+    } catch (error) {
+      console.error("[API] 회원가입 요청 오류:", error);
+      return { success: false, message: "네트워크 오류" };
+    }
+  },
+  
+  getSchools: async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/schools`, {
+        method: "GET",
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.log("[API] 학교 목록 조회 실패:", data);
+        return [];   // 실패 시 빈 배열 반환
+      }
+
+      // 백엔드에서 { schools: ["경북대학교", "서울대학교", ...] } 형식으로 온다고 가정
+      return data.schools || [];
+    } catch (err) {
+      console.error("[API] 학교 목록 요청 오류:", err);
+      return [];
+    }
   },
 
   // 3. 내 피드 API

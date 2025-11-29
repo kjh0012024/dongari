@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 import { initDB} from "./db.js";
 import indexRouter from "./routes/index.js";
 import authRouter from "./routes/auth.js";  // ✅ 로그인 라우터
+import schoolRouter from "./routes/school.js";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use(express.json());     // JSON body 파싱
 // 라우터 등록
 app.use("/", indexRouter);        // 기본 라우트 (예: 헬스체크, 테스트용)
 app.use("/auth", authRouter);     // ✅ 로그인 관련 라우트 (POST /auth/login)
+app.use("/schools", schoolRouter);
 
 // 서버 시작 함수
 async function startServer() {

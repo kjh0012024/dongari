@@ -1,18 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Modal, FlatList 
 } from 'react-native';
 import { mockApi } from '../../api';
 
-// [임시 데이터] 학교 목록
-const SCHOOL_LIST = [
-  "서울대학교", "연세대학교", "고려대학교", "한양대학교", 
-  "성균관대학교", "서강대학교", "중앙대학교", "경희대학교", 
-  "부산대학교", "경북대학교", "전남대학교", "충남대학교",
-  "카이스트", "포항공과대학교", "이화여자대학교"
-];
+
 
 export default function RegisterScreen({ navigation }) {
+  useEffect(() => {
+    const fetchSchools = async () => {
+      try {
+        setSchoolsLoading(true);
+        const res = await mockApi.getSchools();  // 아래에서 만들 API
+        // res가 ['경북대학교', '서울대학교', ...] 이런 형태라고 가정
+        setSchoolList(res);
+      } catch (err) {
+        console.error("[RegisterScreen] 학교 목록 불러오기 실패:", err);
+        Alert.alert("오류", "학교 목록을 불러오지 못했습니다.");
+      } finally {
+        setSchoolsLoading(false);
+      }
+    };
+  
+    fetchSchools();
+  }, []);
+
   // 1. 상태 관리
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,8 +35,11 @@ export default function RegisterScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false); // 모달 상태
   const [searchText, setSearchText] = useState(''); // 학교 검색어
 
+  const [schoolList, setSchoolList] = useState([]);  // 🔹 백엔드에서 받아올 학교 목록
+  const [schoolsLoading, setSchoolsLoading] = useState(false);
+
   // 2. 학교 검색 필터링
-  const filteredSchools = SCHOOL_LIST.filter(s => s.includes(searchText));
+  const filteredSchools = schoolList.filter(s => s.includes(searchText));
 
   // 3. 회원가입 처리
   const handleRegister = async () => {
@@ -44,12 +59,12 @@ export default function RegisterScreen({ navigation }) {
 
     // [서버 요청] 이메일, 비번, 학교 정보 전송
     const res = await mockApi.register(email, password, school);
-
+    console.log("회원가입 결과:", res);
     setLoading(false);
 
     if (res.success) {
       Alert.alert("성공", "회원가입이 완료되었습니다!\n로그인 해주세요.", [
-        { text: "확인", onPress: () => navigation.goBack() }
+        { text: "확인", onPress: () => navigation.goback() }
       ]);
     } else {
       Alert.alert("실패", res.message || "회원가입에 실패했습니다.");
