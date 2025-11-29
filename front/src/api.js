@@ -126,12 +126,32 @@ export const mockApi = {
       const res = await fetch(`${BASE_URL}/clubs/categories`);
       const data = await res.json();
 
-      if (!res.ok) {
+      let categories = [];
+
+      if (res.ok && Array.isArray(data)) {
+        categories = data;
+      } else {
         console.log("[API] 카테고리 목록 조회 실패:", data);
-        return [];
       }
 
-      return Array.isArray(data) ? data : [];
+      // API가 빈 배열을 반환하거나 실패하면, 기존 동아리 목록에서 카테고리를 추출하여 대체합니다.
+      if (!categories.length) {
+        const clubs = await mockApi.getClubs();
+        categories = clubs
+          .flatMap(club => (club.category || "")
+            .split(",")
+            .map(name => name.trim())
+            .filter(Boolean)
+          );
+      }
+
+      // 중복 제거 후 정렬
+      const uniqueCategories = [...new Set(categories)]
+        .map(name => name.trim())
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b));
+
+      return uniqueCategories;
     } catch (err) {
       console.error("[API] 카테고리 목록 요청 오류:", err);
       return [];
