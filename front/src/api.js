@@ -119,6 +119,24 @@ export const mockApi = {
       return [];
     }
   },
+
+  // 카테고리 목록 API
+  getCategories: async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/clubs/categories`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.log("[API] 카테고리 목록 조회 실패:", data);
+        return [];
+      }
+
+      return Array.isArray(data) ? data : [];
+    } catch (err) {
+      console.error("[API] 카테고리 목록 요청 오류:", err);
+      return [];
+    }
+  },
   // 4. 동아리 목록 API
   getCalendar: async () => {
     return new Promise((resolve) => {

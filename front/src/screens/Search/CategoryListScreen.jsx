@@ -7,17 +7,13 @@ export default function CategoryListScreen({ navigation }) {
   const [searchText, setSearchText] = useState(''); // 검색어
 
   useEffect(() => {
-    mockApi.getClubs().then(data => {
-      const categoryList = data.flatMap(club =>
-        club.category
-          ? club.category.split(',').map(name => name.trim()).filter(Boolean)
-          : []
-      );
+    mockApi.getCategories().then(list => {
+      const normalized = (list || [])
+        .filter(Boolean)
+        .map(name => name.trim())
+        .filter(Boolean);
 
-      const uniqueCategories = [...new Set(categoryList)].sort((a, b) =>
-        a.localeCompare(b)
-      );
-
+      const uniqueCategories = [...new Set(normalized)].sort((a, b) => a.localeCompare(b));
       setCategories(uniqueCategories);
     });
   }, []);
