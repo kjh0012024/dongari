@@ -10,6 +10,7 @@ import indexRouter from "./routes/index.js";
 import authRouter from "./routes/auth.js";  // ✅ 로그인 라우터
 import schoolRouter from "./routes/school.js";
 import clubsRouter from "./routes/clubs.js";
+import feedRouter from "./routes/feed.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use("/", indexRouter);        // 기본 라우트 (예: 헬스체크, 테스
 app.use("/auth", authRouter);     // ✅ 로그인 관련 라우트 (POST /auth/login)
 app.use("/schools", schoolRouter);
 app.use("/clubs", clubsRouter);
+app.use("/feed", feedRouter);
 
 // 서버 시작 함수
 async function startServer() {
