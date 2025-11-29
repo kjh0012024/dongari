@@ -20,7 +20,7 @@ router.get("/", async (_req, res) => {
         p.TITLE AS TITLE,
         p.CONTENT AS CONTENT,
         p.CREATED_AT AS CREATED_AT
-      FROM CLUB_POST p
+      FROM POST p
       JOIN CLUB c ON p.CLUB_ID = c.CLUB_ID
       ORDER BY p.CREATED_AT DESC
     `;
