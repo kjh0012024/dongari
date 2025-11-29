@@ -15,7 +15,7 @@ import ClubDetailScreen from './src/screens/Club/ClubDetailScreen';
 import ClubApplyScreen from './src/screens/Club/ClubApplyScreen';
 
 // ★ [추가됨] 새로 만든 관리 및 설정 화면 import
-import ClubManagementScreen from './src/screens/Management/ClubManagementScreen';
+import AppNavigator from './src/navigation/AppNavigator';
 import SettingsScreen from './src/screens/Settings/SettingsScreen';
 import ProfileEditScreen from './src/screens/Settings/ProfileEditScreen';
 
@@ -59,7 +59,7 @@ function MainTabs() {
       <Tab.Screen name="Calender" component={CalenderScreen} options={{ tabBarLabel: '캘린더' }} />
       
       {/* ★ [추가됨] 탭 2개 추가 */}
-      <Tab.Screen name="Management" component={ClubManagementScreen} options={{ tabBarLabel: '동아리 관리' }} />
+      <Tab.Screen name="Management" component={AppNavigator} options={{ tabBarLabel: '동아리 관리' }} />
       <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: '설정' }} />
     </Tab.Navigator>
   );

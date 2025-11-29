@@ -40,7 +40,7 @@ export const mockApi = {
   register: async (email, password) => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        // [가짜 중복 검사] 'test'라는 이메일은 이미 있다고 가정
+       // [가짜 중복 검사] 'test'라는 이메일은 이미 있다고 가정
         if (email === 'test') {
           console.log(`[API] 회원가입 실패(중복): ${email}`);
           resolve({ success: false, message: '이미 가입된 이메일입니다.' });
@@ -83,8 +83,7 @@ export const mockApi = {
       }, 800);
     });
   },
-
-  // 5. 캘린더 일정 API
+  // 4. 동아리 목록 API
   getCalendar: async () => {
     return new Promise((resolve) => {
       setTimeout(() => resolve([
@@ -94,15 +93,16 @@ export const mockApi = {
       ]), 1000);
     });
   },
+  // 5. 캘린더 일정 API
   getUserInfo: async () => {
     return new Promise((resolve) => {
       setTimeout(() => resolve({
-        email: 'test',       // 현재 아이디
-        school: '서울대학교', // 현재 학교
+        email: 'test',
+        school: '서울대학교',
       }), 500);
     });
   },
-  // [추가] 회원 정보 수정 요청
+
   updateUser: async (email, password, school) => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -110,5 +110,69 @@ export const mockApi = {
         resolve({ success: true });
       }, 1000);
     });
+  },
+
+  // ----------------- Management 기능 추가 -----------------
+  _mockClubs: [
+    { id: '101', name: '코딩 동아리', ownerId: '100', description: '코딩 좋아하는 사람 모여요!', coverImage: null, photos: [], applicants: [] },
+    { id: '102', name: '댄스 동아리', ownerId: '200', description: '춤추는 걸 좋아하는 사람!', coverImage: null, photos: [], applicants: [] },
+    { id: '103', name: '축구 동아리', ownerId: '100', description: '축구 즐기는 사람 모여요', coverImage: null, photos: [], applicants: [] },
+  ],
+
+  getUserJoinedClubs: async (userId) => {
+    await new Promise(res => setTimeout(res, 300));
+    // 가입한 동아리만 필터 (지금은 ownerId 기준)
+    return mockApi._mockClubs.filter(c => c.ownerId === userId);
+  },
+
+  getClubById: async (clubId, userId) => {
+    await new Promise(res => setTimeout(res, 300));
+    const club = mockApi._mockClubs.find(c => c.id === clubId);
+    if (!club) throw new Error("동아리 없음");
+    return { ...club, isOwner: club.ownerId === userId };
+  },
+
+  updateClub: async (clubId, updates) => {
+    await new Promise(res => setTimeout(res, 300));
+    mockApi._mockClubs = mockApi._mockClubs.map(c => c.id === clubId ? { ...c, ...updates } : c);
+    return mockApi._mockClubs.find(c => c.id === clubId);
+  },
+
+  uploadPhoto: async (clubId, uri) => {
+    await new Promise(res => setTimeout(res, 300));
+    const id = Date.now().toString();
+    mockApi._mockClubs = mockApi._mockClubs.map(c =>
+      c.id === clubId ? { ...c, photos: [...c.photos, { id, uri }] } : c
+    );
+    return { id, uri };
+  },
+
+  deletePhoto: async (clubId, photoId) => {
+    await new Promise(res => setTimeout(res, 200));
+    mockApi._mockClubs = mockApi._mockClubs.map(c =>
+      c.id === clubId ? { ...c, photos: c.photos.filter(p => p.id !== photoId) } : c
+    );
+    return true;
+  },
+
+  getApplicants: async (clubId) => {
+    await new Promise(res => setTimeout(res, 300));
+    const club = mockApi._mockClubs.find(c => c.id === clubId);
+    return club ? club.applicants : [];
+  },
+
+  acceptApplicant: async (clubId, applicantId) => {
+    await new Promise(res => setTimeout(res, 300));
+    const club = mockApi._mockClubs.find(c => c.id === clubId);
+    if (!club) return null;
+    const applicant = club.applicants.find(a => a.id === applicantId);
+    if (applicant) applicant.status = "accepted";
+    return applicant;
+  },
+
+  sendNotificationMock: async (userId, message) => {
+    await new Promise(res => setTimeout(res, 200));
+    console.log(`[MOCK NOTIFY] to:${userId} - ${message}`);
+    return true;
   }
 };
