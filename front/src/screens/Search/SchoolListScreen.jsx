@@ -5,12 +5,16 @@ import { mockApi } from '../../api';
 export default function SchoolListScreen({ navigation }) {
   const [schools, setSchools] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const filteredSchools = schools.filter(s => s.toLowerCase().includes(searchText.toLowerCase()) );
+  const filteredSchools = schools.filter(s =>
+    s.name.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   useEffect(() => {
-    mockApi.getClubs('학교별').then(data => {
-      const uniqueSchools = [...new Set(data.map(c => c.school))]; // 학교 이름만 추출
-      setSchools(uniqueSchools);
+    mockApi.getSchools().then(data => {
+      const normalized = (data || []).map(s =>
+        typeof s === 'string' ? { id: s, name: s } : { id: s.id, name: s.name }
+      );
+      setSchools(normalized);
     });
   }, []);
 
@@ -24,13 +28,13 @@ export default function SchoolListScreen({ navigation }) {
               />
       <FlatList
         data={filteredSchools}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.id?.toString() || item.name}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.item}
-            onPress={() => navigation.navigate('SchoolClub', { school: item })}
+            onPress={() => navigation.navigate('SchoolClub', { schoolId: item.id, schoolName: item.name })}
           >
-            <Text style={styles.name}>{item}</Text>
+            <Text style={styles.name}>{item.name}</Text>
           </TouchableOpacity>
         )}
       />

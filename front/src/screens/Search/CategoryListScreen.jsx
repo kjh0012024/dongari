@@ -7,8 +7,8 @@ export default function CategoryListScreen({ navigation }) {
   const [searchText, setSearchText] = useState(''); // 검색어
 
   useEffect(() => {
-    mockApi.getClubs('카테고리별').then(data => {
-      const uniqueCategories = [...new Set(data.map(c => c.category))];
+    mockApi.getClubs().then(data => {
+      const uniqueCategories = [...new Set(data.map(c => c.category).filter(Boolean))];
       setCategories(uniqueCategories);
     });
   }, []);

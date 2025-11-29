@@ -78,7 +78,6 @@ export const mockApi = {
         return [];   // 실패 시 빈 배열 반환
       }
 
-      // 백엔드에서 { schools: ["경북대학교", "서울대학교", ...] } 형식으로 온다고 가정
       return data.schools || [];
     } catch (err) {
       console.error("[API] 학교 목록 요청 오류:", err);
@@ -98,24 +97,26 @@ export const mockApi = {
   },
 
   // 4. 동아리 목록 API
-  getClubs: async (type) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        if (type === '학교별') {
-          resolve([
-            { id: '101', name: '코딩 동아리', school: 'A대학교', category: '학술' },
-            { id: '102', name: '댄스 동아리', school: 'B대학교', category: '예술' },
-            { id: '105', name: '사진 동아리', school: 'A대학교', category: '예술' },
-          ]);
-        } else {
-          resolve([
-            { id: '103', name: '축구 동아리', school: 'A대학교', category: '운동' },
-            { id: '104', name: '농구 동아리', school: 'C대학교', category: '운동' },
-            { id: '101', name: '코딩 동아리', school: 'A대학교', category: '학술' },
-          ]);
-        }
-      }, 800);
-    });
+  getClubs: async ({ schoolId, category } = {}) => {
+    try {
+      const params = new URLSearchParams();
+      if (schoolId) params.append("schoolId", schoolId);
+      if (category) params.append("category", category);
+
+      const query = params.toString();
+      const res = await fetch(`${BASE_URL}/clubs${query ? `?${query}` : ""}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.log("[API] 동아리 목록 조회 실패:", data);
+        return [];
+      }
+
+      return data || [];
+    } catch (err) {
+      console.error("[API] 동아리 목록 요청 오류:", err);
+      return [];
+    }
   },
   // 4. 동아리 목록 API
   getCalendar: async () => {

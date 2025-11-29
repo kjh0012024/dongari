@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
     conn = await getConnection();
 
     const sql = `
-      SELECT NAME
+      SELECT SCHOOL_ID, NAME
       FROM SCHOOL
       ORDER BY NAME ASC
     `;
@@ -22,10 +22,13 @@ router.get("/", async (req, res) => {
       outFormat: oracledb.OUT_FORMAT_OBJECT,
     });
 
-    const schools = result.rows.map(row => row.NAME);
+    const schools = result.rows.map(row => ({
+      id: row.SCHOOL_ID,
+      name: row.NAME,
+    }));
 
     return res.json({
-      schools,  // ['경북대학교', '서울대학교', ...]
+      schools,
     });
   } catch (err) {
     console.error("[GET /schools ERROR]", err);
