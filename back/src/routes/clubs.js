@@ -20,8 +20,7 @@ router.get("/", async (req, res) => {
         c.NAME AS NAME,
         s.NAME AS SCHOOL_NAME,
         LISTAGG(cc.NAME, ', ') WITHIN GROUP (ORDER BY cc.NAME) AS CATEGORY_NAMES,
-        c.DESCRIPTION AS DESCRIPTION,
-        c.PROFILE_IMAGE AS PROFILE_IMAGE
+        c.DESCRIPTION AS DESCRIPTION
       FROM CLUB c
       JOIN SCHOOL s ON c.SCHOOL_ID = s.SCHOOL_ID
       LEFT JOIN CLUB_CATEGORY cc ON cc.CLUB_ID = c.CLUB_ID
@@ -33,7 +32,7 @@ router.get("/", async (req, res) => {
               AND LOWER(cc2.NAME) = LOWER(:category)
           )
         )
-      GROUP BY c.CLUB_ID, c.NAME, s.NAME, c.DESCRIPTION, c.PROFILE_IMAGE
+      GROUP BY c.CLUB_ID, c.NAME, s.NAME, c.DESCRIPTION
       ORDER BY c.NAME
     `;
 
@@ -52,7 +51,7 @@ router.get("/", async (req, res) => {
       schoolName: row.SCHOOL_NAME,
       category: row.CATEGORY_NAMES || null,
       description: row.DESCRIPTION,
-      profileImage: row.PROFILE_IMAGE,
+      profileImage: row.PROFILE_IMAGE || null,
     }));
 
     return res.json(clubs);
