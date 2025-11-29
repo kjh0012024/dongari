@@ -12,8 +12,10 @@ export default function RegisterScreen({ navigation }) {
       try {
         setSchoolsLoading(true);
         const res = await mockApi.getSchools();  // 아래에서 만들 API
-        // res가 ['경북대학교', '서울대학교', ...] 이런 형태라고 가정
-        setSchoolList(res);
+        const normalized = (res || []).map(s =>
+          typeof s === 'string' ? { id: s, name: s } : { id: s.id, name: s.name }
+        );
+        setSchoolList(normalized);
       } catch (err) {
         console.error("[RegisterScreen] 학교 목록 불러오기 실패:", err);
         Alert.alert("오류", "학교 목록을 불러오지 못했습니다.");
@@ -39,7 +41,9 @@ export default function RegisterScreen({ navigation }) {
   const [schoolsLoading, setSchoolsLoading] = useState(false);
 
   // 2. 학교 검색 필터링
-  const filteredSchools = schoolList.filter(s => s.includes(searchText));
+  const filteredSchools = schoolList.filter(s =>
+    s.name.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   // 3. 회원가입 처리
   const handleRegister = async () => {
@@ -137,17 +141,17 @@ export default function RegisterScreen({ navigation }) {
 
           <FlatList
             data={filteredSchools}
-            keyExtractor={(item) => item}
+            keyExtractor={(item) => item.id?.toString() || item.name}
             renderItem={({ item }) => (
-              <TouchableOpacity 
-                style={styles.schoolItem} 
+              <TouchableOpacity
+                style={styles.schoolItem}
                 onPress={() => {
-                  setSchool(item);       // 학교 선택
+                  setSchool(item.name);       // 학교 선택
                   setModalVisible(false); // 모달 닫기
                   setSearchText('');      // 검색어 초기화
                 }}
               >
-                <Text style={styles.schoolName}>{item}</Text>
+                <Text style={styles.schoolName}>{item.name}</Text>
               </TouchableOpacity>
             )}
           />

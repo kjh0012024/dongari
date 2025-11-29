@@ -3,18 +3,17 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, TextI
 import { mockApi } from '../../api';
 
 export default function SchoolClubScreen({ route, navigation }) {
-  const { school } = route.params;
+  const { schoolId, schoolName } = route.params;
   const [clubs, setClubs] = useState([]);
   const [filteredClubs, setFilteredClubs] = useState([]);
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
-    mockApi.getClubs('학교별').then(data => {
-      const schoolClubs = data.filter(c => c.school === school);
-      setClubs(schoolClubs);
-      setFilteredClubs(schoolClubs);
+    mockApi.getClubs({ schoolId }).then(data => {
+      setClubs(data);
+      setFilteredClubs(data);
     });
-  }, [school]);
+  }, [schoolId]);
 
   useEffect(() => {
     const filtered = clubs.filter(club =>
@@ -27,7 +26,7 @@ export default function SchoolClubScreen({ route, navigation }) {
     <SafeAreaView style={styles.safeArea}>
       <TextInput
         style={styles.searchInput}
-        placeholder={`${school} 동아리 검색...`}
+        placeholder={`${schoolName || '학교'} 동아리 검색...`}
         value={searchText}
         onChangeText={setSearchText}
       />
@@ -35,12 +34,15 @@ export default function SchoolClubScreen({ route, navigation }) {
         data={filteredClubs}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.item}
             onPress={() => navigation.navigate('ClubDetail', { club: item })}
           >
             <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.info}>{item.school} | {item.category}</Text>
+            <Text style={styles.info}>{item.schoolName} | {item.category}</Text>
+            {item.description ? (
+              <Text numberOfLines={2} style={styles.description}>{item.description}</Text>
+            ) : null}
           </TouchableOpacity>
         )}
       />
@@ -53,5 +55,6 @@ const styles = StyleSheet.create({
   searchInput: { height: 50, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, paddingHorizontal: 15, marginBottom: 10 },
   item: { padding: 15, borderBottomWidth: 1, borderColor: '#eee' },
   name: { fontSize: 16, fontWeight: 'bold' },
-  info: { color: 'gray', marginTop: 5 }
+  info: { color: 'gray', marginTop: 5 },
+  description: { color: '#555', marginTop: 6 }
 });

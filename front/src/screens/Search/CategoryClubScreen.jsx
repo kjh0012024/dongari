@@ -9,10 +9,9 @@ export default function CategoryClubScreen({ route, navigation }) {
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
-    mockApi.getClubs('카테고리별').then(data => {
-      const categoryClubs = data.filter(c => c.category === category);
-      setClubs(categoryClubs);
-      setFilteredClubs(categoryClubs);
+    mockApi.getClubs({ category }).then(data => {
+      setClubs(data);
+      setFilteredClubs(data);
     });
   }, [category]);
 
@@ -35,12 +34,15 @@ export default function CategoryClubScreen({ route, navigation }) {
         data={filteredClubs}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.item}
             onPress={() => navigation.navigate('ClubDetail', { club: item })}
           >
             <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.info}>{item.school} | {item.category}</Text>
+            <Text style={styles.info}>{item.schoolName} | {item.category}</Text>
+            {item.description ? (
+              <Text numberOfLines={2} style={styles.description}>{item.description}</Text>
+            ) : null}
           </TouchableOpacity>
         )}
       />
@@ -53,5 +55,6 @@ const styles = StyleSheet.create({
   searchInput: { height: 50, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, paddingHorizontal: 15, marginBottom: 10 },
   item: { padding: 15, borderBottomWidth: 1, borderColor: '#eee' },
   name: { fontSize: 16, fontWeight: 'bold' },
-  info: { color: 'gray', marginTop: 5 }
+  info: { color: 'gray', marginTop: 5 },
+  description: { color: '#555', marginTop: 6 }
 });
