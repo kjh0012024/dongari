@@ -173,15 +173,32 @@ export const mockApi = {
       return [];
     }
   },
-  // 4. 동아리 목록 API
+  // 4. 캘린더 이벤트 API
   getCalendar: async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve([
-        { id: 'c1', title: '코딩 해커톤', date: '2025-12-01', club: '멋쟁이 사자처럼' },
-        { id: 'c2', title: '댄스부 회식', date: '2025-12-05', club: '댄스 동아리' },
-        { id: 'c3', title: '기말고사 간식행사', date: '2025-12-10', club: '총학생회' },
-      ]), 1000);
-    });
+    try {
+      const res = await fetch(`${BASE_URL}/calendar/events`);
+      const data = await res.json();
+
+      if (res.ok && Array.isArray(data)) {
+        return data.map(item => ({
+          id: item.id ?? item.POST_ID ?? Math.random().toString(),
+          title: item.title ?? item.TITLE ?? "",
+          description: item.description ?? item.CONTENT ?? "",
+          date: item.date ?? item.CREATED_AT ?? "",
+          club: item.club ?? item.CLUB_NAME ?? "",
+        })).filter(item => item.date);
+      }
+      console.log("[API] 캘린더 이벤트 조회 실패:", data);
+    } catch (err) {
+      console.error("[API] 캘린더 이벤트 요청 오류:", err);
+    }
+
+    // 실패하거나 빈 응답일 경우, 예시 데이터 반환
+    return [
+      { id: 'c1', title: '코딩 해커톤', description: '팀별 프로젝트 해커톤', date: '2025-12-01', club: '멋쟁이 사자처럼' },
+      { id: 'c2', title: '댄스부 회식', description: '학기말 댄스파티', date: '2025-12-05', club: '댄스 동아리' },
+      { id: 'c3', title: '기말고사 간식행사', description: '시험기간 간식 배부', date: '2025-12-10', club: '총학생회' },
+    ];
   },
   // 5. 캘린더 일정 API
   getUserInfo: async () => {
