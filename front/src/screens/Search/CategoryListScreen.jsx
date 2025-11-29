@@ -8,7 +8,16 @@ export default function CategoryListScreen({ navigation }) {
 
   useEffect(() => {
     mockApi.getClubs().then(data => {
-      const uniqueCategories = [...new Set(data.map(c => c.category).filter(Boolean))];
+      const categoryList = data.flatMap(club =>
+        club.category
+          ? club.category.split(',').map(name => name.trim()).filter(Boolean)
+          : []
+      );
+
+      const uniqueCategories = [...new Set(categoryList)].sort((a, b) =>
+        a.localeCompare(b)
+      );
+
       setCategories(uniqueCategories);
     });
   }, []);

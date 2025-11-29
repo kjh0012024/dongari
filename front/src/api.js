@@ -1,6 +1,7 @@
 // src/api.js
 
-const BASE_URL = "http://172.20.122.143:4000";
+// 기본 API URL을 환경변수에서 가져오고, 없으면 로컬 서버로 fallback 합니다.
+const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:4000";
 
 export const mockApi = {
   login: async (email, password) => {
