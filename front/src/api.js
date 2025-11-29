@@ -1,6 +1,6 @@
 // src/api.js
 
-const BASE_URL = "http://localhost:4000";
+const BASE_URL = "http://172.20.122.143:4000";
 
 export const mockApi = {
   login: async (email, password) => {

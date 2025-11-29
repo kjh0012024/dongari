@@ -64,7 +64,7 @@ export default function RegisterScreen({ navigation }) {
 
     if (res.success) {
       Alert.alert("성공", "회원가입이 완료되었습니다!\n로그인 해주세요.", [
-        { text: "확인", onPress: () => navigation.goback() }
+        { text: "확인", onPress: () => navigation.goBack() }
       ]);
     } else {
       Alert.alert("실패", res.message || "회원가입에 실패했습니다.");
