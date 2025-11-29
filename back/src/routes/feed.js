@@ -27,6 +27,9 @@ router.get("/", async (_req, res) => {
 
     const result = await conn.execute(sql, {}, {
       outFormat: oracledb.OUT_FORMAT_OBJECT,
+      fetchInfo: {
+        CONTENT: { type: oracledb.STRING },
+      },
     });
 
     const posts = result.rows.map(row => ({
