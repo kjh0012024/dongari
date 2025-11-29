@@ -14,14 +14,16 @@ router.get("/events", async (_req, res) => {
 
     const sql = `
       SELECT
-        p.POST_ID AS POST_ID,
-        p.TITLE AS TITLE,
-        p.CONTENT AS CONTENT,
-        p.CREATED_AT AS CREATED_AT,
-        c.NAME AS CLUB_NAME
-      FROM POST p
-      JOIN CLUB c ON p.CLUB_ID = c.CLUB_ID
-      ORDER BY p.CREATED_AT DESC
+        e.EVENT_ID   AS EVENT_ID,
+        e.TITLE      AS TITLE,
+        e.DESCRIPTION AS DESCRIPTION,
+        e.START_TIME AS START_TIME,
+        e.END_TIME   AS END_TIME,
+        e.LOCATION   AS LOCATION,
+        c.NAME       AS CLUB_NAME
+      FROM EVENT e
+      JOIN CLUB c ON e.CLUB_ID = c.CLUB_ID
+      ORDER BY e.START_TIME DESC
     `;
 
     const result = await conn.execute(sql, {}, {
@@ -29,14 +31,18 @@ router.get("/events", async (_req, res) => {
     });
 
     const events = result.rows.map(row => ({
-      id: row.POST_ID?.toString?.() ?? "",
+      id: row.EVENT_ID?.toString?.() ?? "",
       title: row.TITLE ?? "",
-      description: row.CONTENT ?? "",
+      description: row.DESCRIPTION ?? "",
       club: row.CLUB_NAME ?? "",
-      date: row.CREATED_AT
-        ? new Date(row.CREATED_AT).toISOString().slice(0, 10)
+      date: row.START_TIME
+        ? new Date(row.START_TIME).toISOString().slice(0, 10)
         : "",
-      rawDate: row.CREATED_AT || null,
+      endDate: row.END_TIME
+        ? new Date(row.END_TIME).toISOString().slice(0, 10)
+        : "",
+      location: row.LOCATION ?? "",
+      rawDate: row.START_TIME || null,
     })).filter(event => event.date);
 
     return res.json(events);
