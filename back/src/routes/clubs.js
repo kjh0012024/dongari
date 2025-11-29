@@ -68,4 +68,36 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET /clubs/categories - 모든 카테고리 이름 조회
+router.get("/categories", async (_req, res) => {
+  let conn;
+
+  try {
+    conn = await getConnection();
+
+    const sql = `
+      SELECT DISTINCT NAME
+      FROM CLUB_CATEGORY
+      WHERE NAME IS NOT NULL
+      ORDER BY NAME
+    `;
+
+    const result = await conn.execute(sql, {}, {
+      outFormat: oracledb.OUT_FORMAT_OBJECT,
+    });
+
+    const categories = result.rows.map(row => row.NAME);
+    return res.json(categories);
+  } catch (err) {
+    console.error("[GET /clubs/categories ERROR]", err);
+    return res.status(500).json({
+      message: "카테고리 목록을 불러오는 중 오류가 발생했습니다.",
+    });
+  } finally {
+    if (conn) {
+      try { await conn.close(); } catch (e) {}
+    }
+  }
+});
+
 export default router;
