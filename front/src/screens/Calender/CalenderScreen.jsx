@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars'; // 라이브러리 import
-import { mockApi } from '../../api';
+import { api } from '../../api';
 
 // [설정] 달력을 한국어로 나오게 설정
 LocaleConfig.locales['kr'] = {
@@ -22,7 +22,7 @@ export default function CalenderScreen() {
 
   // 1. 데이터 가져오기
   useEffect(() => {
-    mockApi.getCalendar().then(data => {
+    api.getCalendar().then(data => {
       setSchedules(data);
 
       // 달력에 보여줄 '점(dot)' 데이터 가공하기

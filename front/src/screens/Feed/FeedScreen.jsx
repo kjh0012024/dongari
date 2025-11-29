@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, SafeAreaView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { mockApi } from '../../api';
+import { api } from '../../api';
 
 export default function FeedScreen() {
   const navigation = useNavigation();
@@ -15,7 +15,7 @@ export default function FeedScreen() {
 
     const fetchFeed = async () => {
       try {
-        const data = await mockApi.getFeed();
+        const data = await api.getFeed();
         if (isMounted) {
           setPosts(Array.isArray(data) ? data : []);
         }

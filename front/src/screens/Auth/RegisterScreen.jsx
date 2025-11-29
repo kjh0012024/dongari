@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Modal, FlatList 
 } from 'react-native';
-import { mockApi } from '../../api';
+import { api } from '../../api';
 
 
 
@@ -11,7 +11,7 @@ export default function RegisterScreen({ navigation }) {
     const fetchSchools = async () => {
       try {
         setSchoolsLoading(true);
-        const res = await mockApi.getSchools();  // 아래에서 만들 API
+        const res = await api.getSchools();
         const normalized = (res || []).map(s =>
           typeof s === 'string' ? { id: s, name: s } : { id: s.id, name: s.name }
         );
@@ -62,7 +62,7 @@ export default function RegisterScreen({ navigation }) {
     setLoading(true);
 
     // [서버 요청] 이메일, 비번, 학교 정보 전송
-    const res = await mockApi.register(email, password, school);
+    const res = await api.register(email, password, school);
     console.log("회원가입 결과:", res);
     setLoading(false);
 
