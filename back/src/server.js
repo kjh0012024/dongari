@@ -11,6 +11,7 @@ import authRouter from "./routes/auth.js";  // ✅ 로그인 라우터
 import schoolRouter from "./routes/school.js";
 import clubsRouter from "./routes/clubs.js";
 import feedRouter from "./routes/feed.js";
+import calendarRouter from "./routes/calendar.js";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.use("/auth", authRouter);     // ✅ 로그인 관련 라우트 (POST /auth/
 app.use("/schools", schoolRouter);
 app.use("/clubs", clubsRouter);
 app.use("/feed", feedRouter);
+app.use("/calendar", calendarRouter);
 
 // 서버 시작 함수
 async function startServer() {

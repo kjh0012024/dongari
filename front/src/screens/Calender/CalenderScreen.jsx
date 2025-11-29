@@ -1,6 +1,6 @@
 // src/screens/Calender/CalenderScreen.jsx
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useMemo } from 'react';
+import { View, Text, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars'; // 라이브러리 import
 import { mockApi } from '../../api';
 
@@ -24,17 +24,21 @@ export default function CalenderScreen() {
   useEffect(() => {
     mockApi.getCalendar().then(data => {
       setSchedules(data);
-      
+
       // 달력에 보여줄 '점(dot)' 데이터 가공하기
-      const marks = {};
-      data.forEach(item => {
-        // item.date (예: '2025-12-01')에 점 찍기 설정
-        marks[item.date] = { 
-          marked: true, 
-          dotColor: 'tomato' 
-        };
-      });
+      const marks = data.reduce((acc, item) => {
+        if (!item?.date) return acc;
+        acc[item.date] = { marked: true, dotColor: 'tomato' };
+        return acc;
+      }, {});
+
       setMarkedDates(marks);
+
+      // 첫 데이터를 기본 선택으로 노출
+      if (data.length > 0) {
+        setSelectedDate(data[0].date);
+        setFilteredSchedules(data.filter(item => item.date === data[0].date));
+      }
     });
   }, []);
 
@@ -47,6 +51,12 @@ export default function CalenderScreen() {
     const filtered = schedules.filter(item => item.date === dateString);
     setFilteredSchedules(filtered);
   };
+
+  const selectedDateLabel = useMemo(() => {
+    if (!selectedDate) return '날짜를 선택해주세요';
+    const count = filteredSchedules.length;
+    return count > 0 ? `${selectedDate} 일정 (${count}건)` : `${selectedDate} 일정`;
+  }, [selectedDate, filteredSchedules]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -80,18 +90,19 @@ export default function CalenderScreen() {
 
       {/* 선택한 날짜의 일정 리스트 */}
       <View style={styles.listContainer}>
-        <Text style={styles.listHeader}>
-          {selectedDate ? `${selectedDate} 일정` : '날짜를 선택해주세요'}
-        </Text>
+        <Text style={styles.listHeader}>{selectedDateLabel}</Text>
 
         {filteredSchedules.length > 0 ? (
           <FlatList
             data={filteredSchedules}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item.id?.toString?.() ?? Math.random().toString()}
             renderItem={({ item }) => (
               <View style={styles.scheduleCard}>
                 <Text style={styles.clubName}>{item.club}</Text>
                 <Text style={styles.scheduleTitle}>{item.title}</Text>
+                {!!item.description && (
+                  <Text style={styles.scheduleDescription}>{item.description}</Text>
+                )}
               </View>
             )}
           />
@@ -113,14 +124,15 @@ const styles = StyleSheet.create({
   // 리스트 영역 스타일
   listContainer: { flex: 1, backgroundColor: '#f9f9f9', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, marginTop: 10 },
   listHeader: { fontSize: 18, fontWeight: 'bold', marginBottom: 15, color: '#333' },
-  
+
   // 카드 스타일
   scheduleCard: { backgroundColor: '#fff', padding: 15, borderRadius: 12, marginBottom: 10,  borderLeftWidth: 5, borderLeftColor: 'tomato',
     // 그림자 효과
     shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, elevation: 2
   },
   clubName: { fontSize: 12, color: 'gray', marginBottom: 4 },
-  scheduleTitle: { fontSize: 16, fontWeight: 'bold' },
+  scheduleTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 6 },
+  scheduleDescription: { fontSize: 14, color: '#444', lineHeight: 20 },
 
   // 빈 화면 스타일
   emptyContainer: { alignItems: 'center', marginTop: 30 },
