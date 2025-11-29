@@ -27,8 +27,8 @@ app.use("/auth", authRouter);     // ✅ 로그인 관련 라우트 (POST /auth/
 async function startServer() {
   try {
     await initDB();  // ✅ DB 풀 생성
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`🚀 Server running on http://localhost:${PORT} (0.0.0.0)`);
     });
   } catch (err) {
     console.error("Failed to start server ❌", err);
