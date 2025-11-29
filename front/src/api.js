@@ -88,13 +88,29 @@ export const mockApi = {
 
   // 3. 내 피드 API
   getFeed: async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve([
-        { id: '1', club: '멋쟁이 사자처럼', content: '이번 주 정기 세션은 React Native 기초입니다. 모두 노트북 지참해주세요!', date: '2025-11-27' },
-        { id: '2', club: '통기타 동아리', content: '가을 정기 공연이 다음주로 다가왔습니다. 많은 관심 부탁드려요 🎸', date: '2025-11-26' },
-        { id: '3', club: 'FC 슛돌이', content: '이번 주말 친선 경기 라인업 공지합니다.', date: '2025-11-25' },
-      ]), 1000);
-    });
+    try {
+      const res = await fetch(`${BASE_URL}/feed`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.log("[API] 피드 조회 실패:", data);
+        return [];
+      }
+
+      return Array.isArray(data)
+        ? data.map(item => ({
+            id: item.id?.toString?.() || String(item.POST_ID || ""),
+            clubId: item.clubId ?? item.CLUB_ID,
+            club: item.clubName ?? item.CLUB_NAME ?? "", // 기존 UI 호환
+            content: item.content ?? item.CONTENT ?? "",
+            date: item.createdAt ?? item.CREATED_AT ?? "",
+            title: item.title ?? item.TITLE,
+          }))
+        : [];
+    } catch (err) {
+      console.error("[API] 피드 요청 오류:", err);
+      return [];
+    }
   },
 
   // 4. 동아리 목록 API
