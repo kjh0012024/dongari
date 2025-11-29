@@ -19,13 +19,21 @@ router.get("/", async (req, res) => {
         c.CLUB_ID AS ID,
         c.NAME AS NAME,
         s.NAME AS SCHOOL_NAME,
-        c.CATEGORY AS CATEGORY,
+        LISTAGG(cc.NAME, ', ') WITHIN GROUP (ORDER BY cc.NAME) AS CATEGORY_NAMES,
         c.DESCRIPTION AS DESCRIPTION,
         c.PROFILE_IMAGE AS PROFILE_IMAGE
       FROM CLUB c
       JOIN SCHOOL s ON c.SCHOOL_ID = s.SCHOOL_ID
+      LEFT JOIN CLUB_CATEGORY cc ON cc.CLUB_ID = c.CLUB_ID
       WHERE (:schoolId IS NULL OR c.SCHOOL_ID = :schoolId)
-        AND (:category IS NULL OR c.CATEGORY = :category)
+        AND (
+          :category IS NULL OR EXISTS (
+            SELECT 1 FROM CLUB_CATEGORY cc2
+            WHERE cc2.CLUB_ID = c.CLUB_ID
+              AND LOWER(cc2.NAME) = LOWER(:category)
+          )
+        )
+      GROUP BY c.CLUB_ID, c.NAME, s.NAME, c.DESCRIPTION, c.PROFILE_IMAGE
       ORDER BY c.NAME
     `;
 
@@ -42,7 +50,7 @@ router.get("/", async (req, res) => {
       id: row.ID,
       name: row.NAME,
       schoolName: row.SCHOOL_NAME,
-      category: row.CATEGORY,
+      category: row.CATEGORY_NAMES || null,
       description: row.DESCRIPTION,
       profileImage: row.PROFILE_IMAGE,
     }));
