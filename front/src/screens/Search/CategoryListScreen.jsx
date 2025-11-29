@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, TextInput } from 'react-native';
-import { mockApi } from '../../api';
+import { api } from '../../api';
 
 export default function CategoryListScreen({ navigation }) {
   const [categories, setCategories] = useState([]); // 전체 카테고리
   const [searchText, setSearchText] = useState(''); // 검색어
 
   useEffect(() => {
-    mockApi.getCategories().then(list => {
+    api.getCategories().then(list => {
       const normalized = (list || [])
         .filter(Boolean)
         .map(name => name.trim())

@@ -1,16 +1,10 @@
 // src/screens/Settings/ProfileEditScreen.jsx
 import React, { useState, useEffect } from 'react';
-import { 
-  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Modal, FlatList, ScrollView, ActivityIndicator 
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Modal, FlatList, ScrollView, ActivityIndicator
 } from 'react-native';
-import { mockApi } from '../../api';
-
-const SCHOOL_LIST = [
-  "서울대학교", "연세대학교", "고려대학교", "한양대학교", 
-  "성균관대학교", "서강대학교", "중앙대학교", "경희대학교", 
-  "부산대학교", "경북대학교", "전남대학교", "충남대학교",
-  "카이스트", "포항공과대학교", "이화여자대학교"
-];
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { api } from '../../api';
 
 export default function ProfileEditScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -20,19 +14,40 @@ export default function ProfileEditScreen({ navigation }) {
   
   const [loading, setLoading] = useState(true); // 초기 데이터 로딩
   const [saving, setSaving] = useState(false);  // 저장 중 로딩
+  const [schools, setSchools] = useState([]);
 
   // 학교 찾기 모달 관련
   const [modalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const filteredSchools = SCHOOL_LIST.filter(s => s.includes(searchText));
+  const filteredSchools = schools.filter(s =>
+    (s.name || '').toLowerCase().includes(searchText.toLowerCase())
+  );
 
   // 1. 화면 켜지면 내 정보 가져오기
   useEffect(() => {
-    mockApi.getUserInfo().then(data => {
-      setEmail(data.email);
-      setSchool(data.school);
-      setLoading(false);
-    });
+    const loadProfile = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userToken');
+        const [user, schoolList] = await Promise.all([
+          api.getUserInfo(token),
+          api.getSchools(),
+        ]);
+
+        setEmail(user.email || '');
+        setSchool(user.school || user.schoolName || '');
+        const normalizedSchools = (schoolList || []).map(s =>
+          typeof s === 'string' ? { id: s, name: s } : { id: s.id, name: s.name }
+        );
+        setSchools(normalizedSchools);
+      } catch (err) {
+        console.error('[ProfileEdit] 사용자 정보/학교 불러오기 실패', err);
+        Alert.alert('오류', '프로필 정보를 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProfile();
   }, []);
 
   // 2. 저장 버튼 클릭 시
@@ -49,13 +64,18 @@ export default function ProfileEditScreen({ navigation }) {
     }
 
     setSaving(true);
-    // API에 수정 요청
-    await mockApi.updateUser(email, password, school);
+
+    const token = await AsyncStorage.getItem('userToken');
+    const result = await api.updateUser(token, { email, password, school });
     setSaving(false);
 
-    Alert.alert("성공", "정보가 수정되었습니다.", [
-      { text: "확인", onPress: () => navigation.goBack() }
-    ]);
+    if (result.success) {
+      Alert.alert("성공", "정보가 수정되었습니다.", [
+        { text: "확인", onPress: () => navigation.goBack() }
+      ]);
+    } else {
+      Alert.alert('실패', result.message || '정보 수정에 실패했습니다.');
+    }
   };
 
   if (loading) {
@@ -131,17 +151,17 @@ export default function ProfileEditScreen({ navigation }) {
 
           <FlatList
             data={filteredSchools}
-            keyExtractor={(item) => item}
+            keyExtractor={(item) => item.id?.toString?.() || item.name}
             renderItem={({ item }) => (
-              <TouchableOpacity 
-                style={styles.schoolItem} 
+              <TouchableOpacity
+                style={styles.schoolItem}
                 onPress={() => {
-                  setSchool(item);
+                  setSchool(item.name);
                   setModalVisible(false);
                   setSearchText('');
                 }}
               >
-                <Text style={styles.schoolName}>{item}</Text>
+                <Text style={styles.schoolName}>{item.name}</Text>
               </TouchableOpacity>
             )}
           />

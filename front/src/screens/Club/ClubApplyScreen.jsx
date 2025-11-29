@@ -1,14 +1,33 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { api } from '../../api';
 
 export default function ClubApplyScreen({ route, navigation }) {
   const { club } = route.params;
   const [name, setName] = useState("");
   const [reason, setReason] = useState("");
 
-  const handleApply = () => {
-    alert("신청이 완료되었습니다! (추후 백엔드 연동 예정)");
-    navigation.goBack();
+  const handleApply = async () => {
+    if (!name || !reason) {
+      Alert.alert('알림', '이름과 지원 동기를 모두 입력해주세요.');
+      return;
+    }
+
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      const result = await api.applyToClub(club.id, { name, reason }, token);
+
+      if (result.success) {
+        Alert.alert('완료', '신청이 접수되었습니다.', [
+          { text: '확인', onPress: () => navigation.goBack() },
+        ]);
+      } else {
+        Alert.alert('실패', result.message || '신청 처리 중 문제가 발생했습니다.');
+      }
+    } catch (error) {
+      Alert.alert('오류', error.message || '신청 중 오류가 발생했습니다.');
+    }
   };
 
   return (

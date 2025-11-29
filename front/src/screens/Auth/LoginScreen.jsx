@@ -1,7 +1,8 @@
 // src/screens/Auth/LoginScreen.jsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-import { mockApi } from '../../api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { api } from '../../api';
 
 export default function LoginScreen({ navigation, route }) {
   // App.js에서 setIsLoggedIn 함수 받아오기
@@ -21,15 +22,18 @@ export default function LoginScreen({ navigation, route }) {
     setLoading(true);
 
     // 2. [서버 요청] 입력한 email과 password를 api로 보냄
-    const res = await mockApi.login(email, password);
-    
+    const res = await api.login(email, password);
+
     setLoading(false);
 
     // 3. [결과 처리] 성공 여부에 따라 분기
     if (res.success) {
+      if (res.token) {
+        await AsyncStorage.setItem('userToken', res.token);
+      }
       setIsLoggedIn(true); // 성공 -> 메인 화면으로 전환
     } else {
-      Alert.alert("로그인 실패", "아이디 또는 비밀번호가 틀렸습니다.\n(test / 1234 로 시도해보세요)");
+      Alert.alert("로그인 실패", res.error || "아이디 또는 비밀번호가 틀렸습니다.");
     }
   };
 

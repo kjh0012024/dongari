@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, TextInput } from 'react-native';
-import { mockApi } from '../../api';
+import { api } from '../../api';
 
 export default function SchoolListScreen({ navigation }) {
   const [schools, setSchools] = useState([]);
@@ -10,7 +10,7 @@ export default function SchoolListScreen({ navigation }) {
   );
 
   useEffect(() => {
-    mockApi.getSchools().then(data => {
+    api.getSchools().then(data => {
       const normalized = (data || []).map(s =>
         typeof s === 'string' ? { id: s, name: s } : { id: s.id, name: s.name }
       );

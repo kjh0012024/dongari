@@ -1,29 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, SafeAreaView } from 'react-native';
-import { mockApi } from '../../api';
+import { View, Text, TextInput, Button, StyleSheet, Image, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { api } from '../../api';
 
 export default function EditClubInfoScreen({ route, navigation }) {
   const { clubId } = route.params;
-  const userId = '100';
   const [club, setClub] = useState(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    mockApi.getClubById(clubId, userId).then(data => {
-      setClub(data);
-      setName(data.name);
-      setDescription(data.description);
-    });
+    const fetchClub = async () => {
+      const token = await AsyncStorage.getItem('userToken');
+      try {
+        const data = await api.getClubById(clubId, token);
+        setClub(data);
+        setName(data.name);
+        setDescription(data.description);
+      } catch (err) {
+        console.error('[Management] 동아리 조회 실패', err);
+        Alert.alert('오류', '동아리 정보를 불러오지 못했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClub();
   }, []);
 
   const saveChanges = async () => {
-    await mockApi.updateClub(clubId, { name, description });
-    alert('저장 완료!');
-    navigation.goBack();
+    const token = await AsyncStorage.getItem('userToken');
+    await api.updateClub(clubId, { name, description }, token);
+    Alert.alert('완료', '저장되었습니다.', [{ text: '확인', onPress: () => navigation.goBack() }]);
   };
 
-  if (!club) return <Text>Loading...</Text>;
+  if (loading) return <SafeAreaView style={styles.loading}><ActivityIndicator /></SafeAreaView>;
+  if (!club) return <SafeAreaView style={styles.loading}><Text>동아리 정보를 불러오지 못했습니다.</Text></SafeAreaView>;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -44,6 +57,7 @@ export default function EditClubInfoScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
+  loading: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   label: { fontWeight: 'bold', marginTop: 15 },
   input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 10, marginTop: 5 },
   cover: { width: '100%', height: 150, marginVertical: 10 },

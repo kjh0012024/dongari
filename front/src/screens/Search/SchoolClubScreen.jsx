@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, TextInput } from 'react-native';
-import { mockApi } from '../../api';
+import { api } from '../../api';
 
 export default function SchoolClubScreen({ route, navigation }) {
   const { schoolId, schoolName } = route.params;
@@ -9,7 +9,7 @@ export default function SchoolClubScreen({ route, navigation }) {
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
-    mockApi.getClubs({ schoolId }).then(data => {
+    api.getClubs({ schoolId }).then(data => {
       setClubs(data);
       setFilteredClubs(data);
     });
